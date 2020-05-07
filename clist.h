@@ -7,23 +7,15 @@
 // #define DEBUG
 
 typedef struct _Lista Lista;
-typedef struct _Musica Musica;
 
-struct _Musica
-{   
-    char *titulo;
-    char *autor;
-    int  duracao_em_segundos;
-};
 
 struct _Lista
 {
-    Musica musica;
+    void *data;
     Lista *proximo;
 };
 
-void  InicializarLista(Lista *iterador, Musica data);
-Lista *adicionarElemento(Lista *iterador, Musica data);
+Lista *adicionarElemento(Lista *iterador, void *data, int sizeofdata);
 void for_each(Lista *inicio, void (*p)(void *data));
 
 #endif

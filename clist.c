@@ -1,4 +1,5 @@
 #include "clist.h"
+#include <stdint.h>
 
 // void InicializarLista(Lista *iterador, Musica data){
 //     Lista *lista;
@@ -11,45 +12,44 @@
 //     lista->proximo = NULL;
 // }
 
-
-
-Lista* _criarNodo(Musica musica){
+Lista* _criarNodo(void *data, int sizeofdata){
     Lista *novo_nodo = (Lista*)malloc(sizeof(Lista));
-    novo_nodo->musica = musica;
+    novo_nodo->data = malloc(sizeofdata);
+    int offset;
+    for (offset = 0; offset < sizeofdata; offset++)
+        *((uint8_t *)(novo_nodo->data + offset)) = *((uint8_t *)(data + offset));
     novo_nodo->proximo = NULL;
     return novo_nodo;
 }
 
-Lista *adicionarElemento(Lista *iterador, Musica data){
-    Lista *novo_item = _criarNodo(data);
+Lista *adicionarElemento(Lista *iterador, void *data, int sizeofdata){
+    Lista *novo_item = _criarNodo(data, sizeofdata);
     Lista *auxiliar_inicio = iterador;
+    
+    if (novo_item == NULL) NULL;
 
     if(iterador != NULL){
         while(iterador->proximo != NULL) iterador = iterador->proximo;
         iterador->proximo = novo_item;
+#ifdef DEBUG
+        printf("Adicionou na lista\n");
+#endif
     }else{
         iterador = novo_item;
         iterador->proximo = NULL;
 #ifdef DEBUG
-        printf("Adicionou %s - %s no inicio da lista\n",iterador->musica.titulo, iterador->musica.autor);
+        printf("Adicionou no inicio da lista\n");
 #endif
     }
-
-#ifdef DEBUG
-        // printf("Adicionou %s - %s na lista\n",iterador->musica.titulo, iterador->musica.autor);
-#endif
-
     return iterador;
 }
 
-void for_each(Lista *inicio, void (*p)(void *data)){
+void for_each(Lista *inicio, void (*p)(void *data))
+{
     Lista *iterador = inicio;
-    Musica msc;
     while(iterador->proximo != NULL){
-        msc = iterador->musica;
-        (*p)(&msc);
+        (*p)(iterador->data);
         iterador = iterador->proximo;
-    }
-    msc = iterador->musica;
-    (*p)(&msc);
+    }    
+    (*p)(iterador->data);
 }
